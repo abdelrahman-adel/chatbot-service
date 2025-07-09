@@ -1,0 +1,36 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: chatbot-service
+  datasource:
+    url: jdbc:postgresql://${RDS_HOSTNAME:localhost}:5432/pidima_chatbot
+    username: ${RDS_USERNAME:postgres}
+    password: ${RDS_PASSWORD:12345}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+aws:
+  secretsmanager:
+    region: ${AWS_REGION:us-east-1}
+    llm-secret-name: ${LLM_SECRET_NAME:llm-api-key}
+    jwt-secret-name: ${JWT_SECRET_NAME:jwt-secret}
+resilience4j:
+  circuitbreaker:
+    instances:
+      llmService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 3
+ai:
+  sprints:
+    chatbot:
+      llm-url: ${LLM_API_URL:llm-api-url}
